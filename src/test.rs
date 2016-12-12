@@ -16,40 +16,40 @@ use std::prelude::v1::*;
 fn test_graphemes() {
     use testdata::{TEST_SAME, TEST_DIFF};
 
+    let mut i = 0;
     for &(s, g) in TEST_SAME {
+        i += 1;
         // test forward iterator
-        assert!(UnicodeSegmentation::graphemes(s, true)
-                .zip(g.iter().cloned())
-                .all(|(a,b)| a == b));
-        assert!(UnicodeSegmentation::graphemes(s, false)
-                .zip(g.iter().cloned())
-                .all(|(a,b)| a == b));
+        assert_eq!(UnicodeSegmentation::graphemes(s, true).collect::<Vec<_>>(),
+                   g, "in string {}, {:?}", i, s);
+        assert_eq!(UnicodeSegmentation::graphemes(s, false).collect::<Vec<_>>(),
+                   g, "in string {}, {:?}", i, s);
 
         // test reverse iterator
-        assert!(UnicodeSegmentation::graphemes(s, true).rev()
-                .zip(g.iter().rev().cloned())
-                .all(|(a,b)| a == b));
-        assert!(UnicodeSegmentation::graphemes(s, false).rev()
-                .zip(g.iter().rev().cloned())
-                .all(|(a,b)| a == b));
+        assert_eq!(UnicodeSegmentation::graphemes(s, true).rev().collect::<Vec<_>>(),
+                   g.iter().rev().cloned().collect::<Vec<_>>(),
+                   "in string {}, {:?} (reverse)", i, s);
+        assert_eq!(UnicodeSegmentation::graphemes(s, false).rev().collect::<Vec<_>>(),
+                   g.iter().rev().cloned().collect::<Vec<_>>(),
+                   "in string {}, {:?} (reverse)", i, s);
     }
 
+    let mut i = 0;
     for &(s, gt, gf) in TEST_DIFF {
+        i += 1;
         // test forward iterator
-        assert!(UnicodeSegmentation::graphemes(s, true)
-                .zip(gt.iter().cloned())
-                .all(|(a,b)| a == b));
-        assert!(UnicodeSegmentation::graphemes(s, false)
-                .zip(gf.iter().cloned())
-                .all(|(a,b)| a == b));
+        assert_eq!(UnicodeSegmentation::graphemes(s, true).collect::<Vec<_>>(), gt,
+                   "in string {}, {:?} (extended)", i, s);
+        assert_eq!(UnicodeSegmentation::graphemes(s, false).collect::<Vec<_>>(), gf,
+                   "in string {}, {:?} (legacy)", i, s);
 
         // test reverse iterator
-        assert!(UnicodeSegmentation::graphemes(s, true).rev()
-                .zip(gt.iter().rev().cloned())
-                .all(|(a,b)| a == b));
-        assert!(UnicodeSegmentation::graphemes(s, false).rev()
-                .zip(gf.iter().rev().cloned())
-                .all(|(a,b)| a == b));
+        assert_eq!(UnicodeSegmentation::graphemes(s, true).rev().collect::<Vec<_>>(),
+                   gt.iter().cloned().rev().collect::<Vec<_>>(),
+                   "in string {}, {:?} (extended/rev)", i, s);
+        assert_eq!(UnicodeSegmentation::graphemes(s, false).rev().collect::<Vec<_>>(),
+                   gf.iter().cloned().rev().collect::<Vec<_>>(),
+                   "in string {}, {:?} (legacy/rev)", i, s);
     }
 
     // test the indices iterators
