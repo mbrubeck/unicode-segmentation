@@ -82,16 +82,17 @@ fn test_graphemes() {
 fn test_words() {
     use testdata::TEST_WORD;
 
+    let mut i = 0;
     for &(s, w) in TEST_WORD {
+        i += 1;
         // test forward iterator
-        assert!(s.split_word_bounds()
-                .zip(w.iter().cloned())
-                .all(|(a,b)| a == b));
+        assert_eq!(s.split_word_bounds().collect::<Vec<_>>(),
+                   w, "in string {}, {:?}", i, s);
 
         // test reverse iterator
-        assert!(s.split_word_bounds().rev()
-                .zip(w.iter().rev().cloned())
-                .all(|(a,b)| a == b));
+        assert_eq!(s.split_word_bounds().rev().collect::<Vec<_>>(),
+                   w.iter().rev().cloned().collect::<Vec<_>>(),
+                   "in string {}, {:?} (reverse)", i, s);
 
         // generate offsets from word string lengths
         let mut indices = vec![0];
